@@ -1,0 +1,75 @@
+{
+  "subjects": {
+    "Charged twice for our subscription": {
+      "action": "automatic_route",
+      "destination": {"team_id": "billing", "team_name": "Billing Support", "email": "billing@acme.example"},
+      "routing": {
+        "winning_team": "billing",
+        "confidence": 0.97,
+        "has_suitable_team_probability": 0.99,
+        "candidates": [
+          {"team_id": "billing", "probability": 0.97},
+          {"team_id": "customer_success", "probability": 0.02},
+          {"team_id": "technical_support", "probability": 0.01}
+        ]
+      },
+      "signals": {"urgency": "medium", "language": "en", "topic": "billing", "sentiment": "frustrated", "refund_intent_probability": 0.92, "churn_risk": "low"}
+    },
+    "Production API returning 500 errors": {
+      "action": "automatic_route",
+      "destination": {"team_id": "technical_support", "team_name": "Technical Support", "email": "technical-support@acme.example"},
+      "routing": {
+        "winning_team": "technical_support",
+        "confidence": 0.98,
+        "has_suitable_team_probability": 0.99,
+        "candidates": [
+          {"team_id": "technical_support", "probability": 0.98},
+          {"team_id": "customer_success", "probability": 0.01},
+          {"team_id": "billing", "probability": 0.01}
+        ]
+      },
+      "signals": {"urgency": "critical", "language": "en", "topic": "technical_issue", "sentiment": "frustrated", "refund_intent_probability": 0.01, "churn_risk": "medium"}
+    },
+    "We are considering cancellation": {
+      "action": "automatic_route",
+      "destination": {"team_id": "customer_success", "team_name": "Customer Success", "email": "customer-success@acme.example"},
+      "routing": {
+        "winning_team": "customer_success",
+        "confidence": 0.96,
+        "has_suitable_team_probability": 0.98,
+        "candidates": [
+          {"team_id": "customer_success", "probability": 0.96},
+          {"team_id": "billing", "probability": 0.03},
+          {"team_id": "technical_support", "probability": 0.01}
+        ]
+      },
+      "signals": {"urgency": "medium", "language": "en", "topic": "account_and_retention", "sentiment": "concerned", "refund_intent_probability": 0.08, "churn_risk": "high"}
+    },
+    "University research partnership": {
+      "action": "human_review",
+      "destination": {"team_id": null, "team_name": "Human Router", "email": "support-router@acme.example"},
+      "routing": {
+        "winning_team": null,
+        "confidence": 0.41,
+        "has_suitable_team_probability": 0.18,
+        "candidates": [
+          {"team_id": "customer_success", "probability": 0.41},
+          {"team_id": "billing", "probability": 0.31},
+          {"team_id": "technical_support", "probability": 0.28}
+        ]
+      },
+      "signals": {"urgency": "low", "language": "en", "topic": "other", "sentiment": "neutral", "refund_intent_probability": 0.01, "churn_risk": "low"}
+    },
+    "__default__": {
+      "action": "human_review",
+      "destination": {"team_id": null, "team_name": "Human Router", "email": "support-router@acme.example"},
+      "routing": {
+        "winning_team": null,
+        "confidence": 0.0,
+        "has_suitable_team_probability": 0.0,
+        "candidates": []
+      },
+      "signals": {"urgency": "low", "language": "other_or_unknown", "topic": "other", "sentiment": "neutral", "refund_intent_probability": 0.0, "churn_risk": "low"}
+    }
+  }
+}
