@@ -1,0 +1,20 @@
+{
+  "human_review_email": "support-router@acme.example",
+  "teams": {
+    "billing": {
+      "name": "Billing Support",
+      "email": "billing@acme.example",
+      "handles": "Invoices, charges, payment failures, billing corrections and charge-related refund requests. Not product defects, login issues or cancellation discussions."
+    },
+    "technical_support": {
+      "name": "Technical Support",
+      "email": "technical-support@acme.example",
+      "handles": "Product defects, outages, integrations, API failures, login defects and unexpected software behavior. Not billing disputes, contract changes or sales questions."
+    },
+    "customer_success": {
+      "name": "Customer Success",
+      "email": "customer-success@acme.example",
+      "handles": "Adoption, plan fit, renewal, cancellation intent, retention and guidance on obtaining value. Not technical incidents or incorrect charges."
+    }
+  }
+}

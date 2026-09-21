@@ -6,11 +6,12 @@ import json
 from pathlib import Path
 from typing import Any
 
+from support_router.backends.base import BackendError
 from support_router.config import AuthenticationError, MOCK_API_TOKEN
-from support_router.domain import DecisionResult, EmailRequest
+from support_router.domain import BackendDecision, EmailRequest
 
 
-class FixtureError(ValueError):
+class FixtureError(BackendError):
     """Raised when mock fixtures are missing or invalid."""
 
 
@@ -37,13 +38,15 @@ class MockDecisionBackend:
             for subject, result in payload["subjects"].items()
         }
 
-    def evaluate(self, request: EmailRequest) -> DecisionResult:
+    def evaluate(self, request: EmailRequest) -> BackendDecision:
         payload = self._fixtures.get(normalize_subject(request.subject))
         if payload is None:
             payload = self._fixtures.get("__default__")
         if payload is None:
             raise FixtureError("Fixture file must define a '__default__' result")
         try:
-            return DecisionResult.from_fixture(request.message_id, payload)
+            return BackendDecision.from_jev_response(
+                request.message_id, payload, provider="mock"
+            )
         except (KeyError, TypeError, ValueError) as exc:
             raise FixtureError("Fixture result does not match the decision schema") from exc

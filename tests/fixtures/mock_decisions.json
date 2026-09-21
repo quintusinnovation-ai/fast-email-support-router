@@ -1,75 +1,74 @@
 {
   "subjects": {
     "Charged twice for our subscription": {
-      "action": "automatic_route",
-      "destination": {"team_id": "billing", "team_name": "Billing Support", "email": "billing@acme.example"},
-      "routing": {
-        "winning_team": "billing",
-        "confidence": 0.97,
-        "has_suitable_team_probability": 0.99,
-        "candidates": [
-          {"team_id": "billing", "probability": 0.97},
-          {"team_id": "customer_success", "probability": 0.02},
-          {"team_id": "technical_support", "probability": 0.01}
-        ]
+      "model": "mock-jev-1.13.0",
+      "answers": {
+        "winning_team": {"type": "choice", "choice": "billing", "confidence": 0.97, "probabilities": {"billing": 0.97, "technical_support": 0.01, "customer_success": 0.02}},
+        "has_suitable_team": {"type": "noul", "noul": 0.99},
+        "urgency": {"type": "score", "score": 1.0, "confidence": 1.0, "legend": {"0": "low", "1": "medium", "2": "high", "3": "critical"}, "probabilities": {"0": 0.0, "1": 1.0, "2": 0.0, "3": 0.0}},
+        "language": {"type": "choice", "choice": "en", "confidence": 1.0, "probabilities": {"en": 1.0, "de": 0.0, "other_or_unknown": 0.0}},
+        "topic": {"type": "choice", "choice": "billing", "confidence": 1.0, "probabilities": {"billing": 1.0, "technical_issue": 0.0, "account_and_retention": 0.0, "other": 0.0}},
+        "sentiment": {"type": "score", "score": 2.0, "confidence": 1.0, "legend": {"0": "neutral", "1": "concerned", "2": "frustrated"}, "probabilities": {"0": 0.0, "1": 0.0, "2": 1.0}},
+        "refund_intent": {"type": "noul", "noul": 0.92},
+        "churn_risk": {"type": "score", "score": 0.0, "confidence": 1.0, "legend": {"0": "low", "1": "medium", "2": "high"}, "probabilities": {"0": 1.0, "1": 0.0, "2": 0.0}}
       },
-      "signals": {"urgency": "medium", "language": "en", "topic": "billing", "sentiment": "frustrated", "refund_intent_probability": 0.92, "churn_risk": "low"}
+      "usage": {"input_tokens": 0, "output_tokens": 0}
     },
     "Production API returning 500 errors": {
-      "action": "automatic_route",
-      "destination": {"team_id": "technical_support", "team_name": "Technical Support", "email": "technical-support@acme.example"},
-      "routing": {
-        "winning_team": "technical_support",
-        "confidence": 0.98,
-        "has_suitable_team_probability": 0.99,
-        "candidates": [
-          {"team_id": "technical_support", "probability": 0.98},
-          {"team_id": "customer_success", "probability": 0.01},
-          {"team_id": "billing", "probability": 0.01}
-        ]
+      "model": "mock-jev-1.13.0",
+      "answers": {
+        "winning_team": {"type": "choice", "choice": "technical_support", "confidence": 0.98, "probabilities": {"billing": 0.01, "technical_support": 0.98, "customer_success": 0.01}},
+        "has_suitable_team": {"type": "noul", "noul": 0.99},
+        "urgency": {"type": "score", "score": 3.0, "confidence": 1.0, "legend": {"0": "low", "1": "medium", "2": "high", "3": "critical"}, "probabilities": {"0": 0.0, "1": 0.0, "2": 0.0, "3": 1.0}},
+        "language": {"type": "choice", "choice": "en", "confidence": 1.0, "probabilities": {"en": 1.0, "de": 0.0, "other_or_unknown": 0.0}},
+        "topic": {"type": "choice", "choice": "technical_issue", "confidence": 1.0, "probabilities": {"billing": 0.0, "technical_issue": 1.0, "account_and_retention": 0.0, "other": 0.0}},
+        "sentiment": {"type": "score", "score": 2.0, "confidence": 1.0, "legend": {"0": "neutral", "1": "concerned", "2": "frustrated"}, "probabilities": {"0": 0.0, "1": 0.0, "2": 1.0}},
+        "refund_intent": {"type": "noul", "noul": 0.01},
+        "churn_risk": {"type": "score", "score": 1.0, "confidence": 1.0, "legend": {"0": "low", "1": "medium", "2": "high"}, "probabilities": {"0": 0.0, "1": 1.0, "2": 0.0}}
       },
-      "signals": {"urgency": "critical", "language": "en", "topic": "technical_issue", "sentiment": "frustrated", "refund_intent_probability": 0.01, "churn_risk": "medium"}
+      "usage": {"input_tokens": 0, "output_tokens": 0}
     },
     "We are considering cancellation": {
-      "action": "automatic_route",
-      "destination": {"team_id": "customer_success", "team_name": "Customer Success", "email": "customer-success@acme.example"},
-      "routing": {
-        "winning_team": "customer_success",
-        "confidence": 0.96,
-        "has_suitable_team_probability": 0.98,
-        "candidates": [
-          {"team_id": "customer_success", "probability": 0.96},
-          {"team_id": "billing", "probability": 0.03},
-          {"team_id": "technical_support", "probability": 0.01}
-        ]
+      "model": "mock-jev-1.13.0",
+      "answers": {
+        "winning_team": {"type": "choice", "choice": "customer_success", "confidence": 0.96, "probabilities": {"billing": 0.03, "technical_support": 0.01, "customer_success": 0.96}},
+        "has_suitable_team": {"type": "noul", "noul": 0.98},
+        "urgency": {"type": "score", "score": 1.0, "confidence": 1.0, "legend": {"0": "low", "1": "medium", "2": "high", "3": "critical"}, "probabilities": {"0": 0.0, "1": 1.0, "2": 0.0, "3": 0.0}},
+        "language": {"type": "choice", "choice": "en", "confidence": 1.0, "probabilities": {"en": 1.0, "de": 0.0, "other_or_unknown": 0.0}},
+        "topic": {"type": "choice", "choice": "account_and_retention", "confidence": 1.0, "probabilities": {"billing": 0.0, "technical_issue": 0.0, "account_and_retention": 1.0, "other": 0.0}},
+        "sentiment": {"type": "score", "score": 1.0, "confidence": 1.0, "legend": {"0": "neutral", "1": "concerned", "2": "frustrated"}, "probabilities": {"0": 0.0, "1": 1.0, "2": 0.0}},
+        "refund_intent": {"type": "noul", "noul": 0.08},
+        "churn_risk": {"type": "score", "score": 2.0, "confidence": 1.0, "legend": {"0": "low", "1": "medium", "2": "high"}, "probabilities": {"0": 0.0, "1": 0.0, "2": 1.0}}
       },
-      "signals": {"urgency": "medium", "language": "en", "topic": "account_and_retention", "sentiment": "concerned", "refund_intent_probability": 0.08, "churn_risk": "high"}
+      "usage": {"input_tokens": 0, "output_tokens": 0}
     },
     "University research partnership": {
-      "action": "human_review",
-      "destination": {"team_id": null, "team_name": "Human Router", "email": "support-router@acme.example"},
-      "routing": {
-        "winning_team": null,
-        "confidence": 0.41,
-        "has_suitable_team_probability": 0.18,
-        "candidates": [
-          {"team_id": "customer_success", "probability": 0.41},
-          {"team_id": "billing", "probability": 0.31},
-          {"team_id": "technical_support", "probability": 0.28}
-        ]
+      "model": "mock-jev-1.13.0",
+      "answers": {
+        "winning_team": {"type": "choice", "choice": "customer_success", "confidence": 0.41, "probabilities": {"billing": 0.31, "technical_support": 0.28, "customer_success": 0.41}},
+        "has_suitable_team": {"type": "noul", "noul": 0.18},
+        "urgency": {"type": "score", "score": 0.0, "confidence": 1.0, "legend": {"0": "low", "1": "medium", "2": "high", "3": "critical"}, "probabilities": {"0": 1.0, "1": 0.0, "2": 0.0, "3": 0.0}},
+        "language": {"type": "choice", "choice": "en", "confidence": 1.0, "probabilities": {"en": 1.0, "de": 0.0, "other_or_unknown": 0.0}},
+        "topic": {"type": "choice", "choice": "other", "confidence": 1.0, "probabilities": {"billing": 0.0, "technical_issue": 0.0, "account_and_retention": 0.0, "other": 1.0}},
+        "sentiment": {"type": "score", "score": 0.0, "confidence": 1.0, "legend": {"0": "neutral", "1": "concerned", "2": "frustrated"}, "probabilities": {"0": 1.0, "1": 0.0, "2": 0.0}},
+        "refund_intent": {"type": "noul", "noul": 0.01},
+        "churn_risk": {"type": "score", "score": 0.0, "confidence": 1.0, "legend": {"0": "low", "1": "medium", "2": "high"}, "probabilities": {"0": 1.0, "1": 0.0, "2": 0.0}}
       },
-      "signals": {"urgency": "low", "language": "en", "topic": "other", "sentiment": "neutral", "refund_intent_probability": 0.01, "churn_risk": "low"}
+      "usage": {"input_tokens": 0, "output_tokens": 0}
     },
     "__default__": {
-      "action": "human_review",
-      "destination": {"team_id": null, "team_name": "Human Router", "email": "support-router@acme.example"},
-      "routing": {
-        "winning_team": null,
-        "confidence": 0.0,
-        "has_suitable_team_probability": 0.0,
-        "candidates": []
+      "model": "mock-jev-1.13.0",
+      "answers": {
+        "winning_team": {"type": "choice", "choice": "billing", "confidence": 0.0, "probabilities": {"billing": 0.34, "technical_support": 0.33, "customer_success": 0.33}},
+        "has_suitable_team": {"type": "noul", "noul": 0.0},
+        "urgency": {"type": "score", "score": 0.0, "confidence": 1.0, "legend": {"0": "low", "1": "medium", "2": "high", "3": "critical"}, "probabilities": {"0": 1.0, "1": 0.0, "2": 0.0, "3": 0.0}},
+        "language": {"type": "choice", "choice": "other_or_unknown", "confidence": 1.0, "probabilities": {"en": 0.0, "de": 0.0, "other_or_unknown": 1.0}},
+        "topic": {"type": "choice", "choice": "other", "confidence": 1.0, "probabilities": {"billing": 0.0, "technical_issue": 0.0, "account_and_retention": 0.0, "other": 1.0}},
+        "sentiment": {"type": "score", "score": 0.0, "confidence": 1.0, "legend": {"0": "neutral", "1": "concerned", "2": "frustrated"}, "probabilities": {"0": 1.0, "1": 0.0, "2": 0.0}},
+        "refund_intent": {"type": "noul", "noul": 0.0},
+        "churn_risk": {"type": "score", "score": 0.0, "confidence": 1.0, "legend": {"0": "low", "1": "medium", "2": "high"}, "probabilities": {"0": 1.0, "1": 0.0, "2": 0.0}}
       },
-      "signals": {"urgency": "low", "language": "other_or_unknown", "topic": "other", "sentiment": "neutral", "refund_intent_probability": 0.0, "churn_risk": "low"}
+      "usage": {"input_tokens": 0, "output_tokens": 0}
     }
   }
 }
