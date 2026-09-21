@@ -3,7 +3,10 @@ __pycache__/
 .pytest_cache/
 .venv/
 dist/
+!openclaw-plugin/dist/
+!openclaw-plugin/dist/**
 build/
 *.egg-info/
+node_modules/
 .env
 uv.lock

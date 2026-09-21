@@ -1,0 +1,56 @@
+{
+  "id": "support-router",
+  "name": "Support Router",
+  "description": "Route an email through the installed provider-neutral Support Router core.",
+  "version": "0.1.0",
+  "configSchema": {
+    "type": "object",
+    "required": [
+      "executable",
+      "configFile"
+    ],
+    "properties": {
+      "executable": {
+        "type": "string",
+        "description": "Absolute path to the support-router executable."
+      },
+      "configFile": {
+        "type": "string",
+        "description": "Absolute path to the instance team configuration."
+      },
+      "fixtureFile": {
+        "type": "string",
+        "description": "Mock response fixture file."
+      },
+      "backend": {
+        "anyOf": [
+          {
+            "type": "string",
+            "const": "mock"
+          },
+          {
+            "type": "string",
+            "const": "jev"
+          }
+        ]
+      },
+      "apiToken": {
+        "type": "string"
+      },
+      "timeoutMs": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 120000
+      }
+    },
+    "additionalProperties": false
+  },
+  "activation": {
+    "onStartup": true
+  },
+  "contracts": {
+    "tools": [
+      "support_router_route_email"
+    ]
+  }
+}

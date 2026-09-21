@@ -41,6 +41,30 @@ result = route_email(
 
 The live JEV backend is intentionally deferred. Selecting `SUPPORT_ROUTER_BACKEND=jev` fails explicitly rather than silently substituting the mock.
 
+## JSON command line interface
+
+The installed command reads one email as JSON from standard input and writes one routing result as JSON to standard output:
+
+```bash
+printf '%s\n' '{"message_id":"gmail-message-123","sender":"customer@example.com","subject":"Charged twice for our subscription","body_text":"We have two identical charges for September."}' \
+  | support-router
+```
+
+Set `SUPPORT_ROUTER_CONFIG_FILE` to the instance-specific team configuration. Keep that file outside the repository when it contains real destination addresses.
+
+## OpenClaw tool and skill
+
+The plugin exposes `support_router_route_email`. It accepts `message_id`, `sender`, `subject`, `body_text`, and optional `received_at`; configuration is loaded internally by the installed core.
+
+```bash
+cd openclaw-plugin
+npm ci
+npm run build
+openclaw plugins install --link "$PWD"
+```
+
+Configure the plugin with the absolute paths to the installed `support-router` executable and the instance team configuration, then restart the OpenClaw gateway. The complete companion skill is versioned in `skill/route-support-emails/`.
+
 ## Development
 
 ```bash
