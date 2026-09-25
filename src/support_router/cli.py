@@ -35,7 +35,7 @@ def route_payload(payload: Any, settings: Settings) -> dict[str, Any]:
         received_at=payload.get("received_at"),
     )
     config = load_company_config(settings.config_file)
-    backend = create_backend(settings)
+    backend = create_backend(settings, config)
     return _json_value(route_email(backend, config, request))
 
 

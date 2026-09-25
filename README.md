@@ -39,7 +39,18 @@ result = route_email(
 )
 ```
 
-The live JEV backend is intentionally deferred. Selecting `SUPPORT_ROUTER_BACKEND=jev` fails explicitly rather than silently substituting the mock.
+## Live JEV backend
+
+The live adapter sends the same state and atomic questions to the TypeSafe System One API. Enable it after adding the API key:
+
+```bash
+export SUPPORT_ROUTER_BACKEND=jev
+export SUPPORT_ROUTER_API_TOKEN=<private-tool-token>
+export TYPESAFE_API_KEY=<typesafe-key>
+export TYPESAFE_DEFAULT_MODEL=jev-latest
+```
+
+`TYPESAFE_BASE_URL` can override the default `https://api.typesafe.ai/v1/systemone` endpoint. Provider failures are retried within a bounded window and then resolve to `human_review`; credentials and email bodies are never logged by the core.
 
 ## JSON command line interface
 

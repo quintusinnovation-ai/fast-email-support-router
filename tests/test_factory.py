@@ -3,7 +3,8 @@ from pathlib import Path
 import pytest
 
 from support_router.backends.mock import MockDecisionBackend
-from support_router.config import Settings
+from support_router.backends.jev import JevDecisionBackend
+from support_router.config import Settings, load_company_config
 from support_router.factory import create_backend
 
 
@@ -19,12 +20,12 @@ def test_factory_builds_mock_backend():
     assert isinstance(create_backend(settings), MockDecisionBackend)
 
 
-def test_factory_does_not_silently_substitute_jev():
+def test_factory_builds_live_jev_backend():
     settings = Settings(
         backend="jev",
         api_token="live",
         fixture_file=FIXTURES,
         typesafe_api_key="secret",
     )
-    with pytest.raises(NotImplementedError):
-        create_backend(settings)
+    backend = create_backend(settings, load_company_config(Path(__file__).parents[1] / "config" / "teams.json"))
+    assert isinstance(backend, JevDecisionBackend)

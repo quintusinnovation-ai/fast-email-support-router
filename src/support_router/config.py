@@ -96,6 +96,7 @@ class Settings:
     typesafe_api_key: str | None = None
     typesafe_default_model: str = "jev-latest"
     typesafe_log_level: str = "warning"
+    typesafe_base_url: str = "https://api.typesafe.ai/v1/systemone"
 
     @classmethod
     def from_env(cls, env: Mapping[str, str] | None = None) -> "Settings":
@@ -121,4 +122,7 @@ class Settings:
             typesafe_api_key=typesafe_api_key,
             typesafe_default_model=values.get("TYPESAFE_DEFAULT_MODEL", "jev-latest"),
             typesafe_log_level=values.get("TYPESAFE_LOG_LEVEL", "warning"),
+            typesafe_base_url=values.get(
+                "TYPESAFE_BASE_URL", "https://api.typesafe.ai/v1/systemone"
+            ),
         )
