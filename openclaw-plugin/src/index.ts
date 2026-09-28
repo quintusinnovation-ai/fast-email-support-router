@@ -78,6 +78,9 @@ export async function runRouter(
   const stderr: Buffer[] = [];
   child.stdout.on("data", (chunk: Buffer) => stdout.push(chunk));
   child.stderr.on("data", (chunk: Buffer) => stderr.push(chunk));
+  // A router that fails during startup may close stdin before Node flushes the
+  // request. Its exit code and stderr below remain the authoritative error.
+  child.stdin.on("error", () => undefined);
   child.stdin.end(JSON.stringify(input));
 
   const timeout = setTimeout(() => child.kill("SIGKILL"), config.timeoutMs ?? 30000);

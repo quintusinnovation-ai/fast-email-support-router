@@ -46,6 +46,18 @@ def test_route_payload_rejects_configuration_fields():
         raise AssertionError("configuration field was accepted")
 
 
+def test_route_payload_rejects_missing_required_email_field():
+    request = payload()
+    del request["body_text"]
+
+    try:
+        route_payload(request, settings())
+    except ValueError as exc:
+        assert str(exc) == "Missing input fields: body_text"
+    else:
+        raise AssertionError("incomplete email was accepted")
+
+
 def test_run_reads_one_json_object_and_writes_one_json_result(monkeypatch):
     monkeypatch.setenv("SUPPORT_ROUTER_API_TOKEN", "12345")
     monkeypatch.setenv("SUPPORT_ROUTER_CONFIG_FILE", str(ROOT / "config" / "teams.json"))
@@ -67,3 +79,14 @@ def test_run_reports_invalid_json_only_on_stderr():
     assert run(io.StringIO("{"), stdout, stderr) == 2
     assert stdout.getvalue() == ""
     assert stderr.getvalue()
+
+
+def test_run_never_writes_configuration_errors_to_stdout(monkeypatch):
+    monkeypatch.delenv("SUPPORT_ROUTER_API_TOKEN", raising=False)
+    monkeypatch.setenv("SUPPORT_ROUTER_ENV_FILE", "/nonexistent/router.env")
+    stdout = io.StringIO()
+    stderr = io.StringIO()
+
+    assert run(io.StringIO(json.dumps(payload())), stdout, stderr) == 2
+    assert stdout.getvalue() == ""
+    assert stderr.getvalue().strip() == "SUPPORT_ROUTER_API_TOKEN is required"

@@ -67,3 +67,62 @@ def test_jev_backend_converts_provider_error_to_backend_error(monkeypatch):
     monkeypatch.setattr("support_router.backends.jev.urlopen", fail)
     with pytest.raises(BackendError):
         backend().evaluate(EmailRequest("msg-1", "a@example.com", "Subject", "Body"))
+
+
+def test_jev_backend_retries_transient_failures(monkeypatch):
+    attempts = []
+
+    def flaky(*_args, **_kwargs):
+        attempts.append(object())
+        if len(attempts) < 3:
+            raise HTTPError("url", 503, "unavailable", {}, io.BytesIO())
+        return Response()
+
+    monkeypatch.setattr("support_router.backends.jev.urlopen", flaky)
+    monkeypatch.setattr("support_router.backends.jev.time.sleep", lambda _seconds: None)
+    live_backend = JevDecisionBackend(
+        load_company_config(ROOT / "config" / "teams.json"),
+        "secret",
+        max_attempts=3,
+    )
+
+    result = live_backend.evaluate(
+        EmailRequest("msg-1", "a@example.com", "Charged twice", "Please refund me")
+    )
+
+    assert len(attempts) == 3
+    assert result.provider == "jev"
+
+
+def test_jev_backend_does_not_retry_permanent_client_error(monkeypatch):
+    attempts = []
+
+    def fail(*_args, **_kwargs):
+        attempts.append(object())
+        raise HTTPError("url", 401, "unauthorized", {}, io.BytesIO())
+
+    monkeypatch.setattr("support_router.backends.jev.urlopen", fail)
+    live_backend = JevDecisionBackend(
+        load_company_config(ROOT / "config" / "teams.json"),
+        "secret",
+        max_attempts=3,
+    )
+
+    with pytest.raises(BackendError):
+        live_backend.evaluate(EmailRequest("msg-1", "a@example.com", "Subject", "Body"))
+
+    assert len(attempts) == 1
+
+
+def test_jev_backend_rejects_response_with_invalid_decision_schema(monkeypatch):
+    class InvalidResponse(Response):
+        def read(self):
+            return b'{"model":"jev-test","answers":{}}'
+
+    monkeypatch.setattr(
+        "support_router.backends.jev.urlopen",
+        lambda *_args, **_kwargs: InvalidResponse(),
+    )
+
+    with pytest.raises(BackendError, match="decision schema"):
+        backend().evaluate(EmailRequest("msg-1", "a@example.com", "Subject", "Body"))

@@ -70,6 +70,60 @@ def test_process_environment_overrides_router_env_file(tmp_path):
     assert settings.typesafe_default_model == "new-model"
 
 
+def test_env_file_supports_comments_exports_and_quoted_values(tmp_path):
+    env_file = tmp_path / "router.env"
+    env_file.write_text(
+        "# router-owned configuration\n"
+        "export SUPPORT_ROUTER_BACKEND=jev\n"
+        "SUPPORT_ROUTER_API_TOKEN='live token'\n"
+        'TYPESAFE_API_KEY="quoted-key"\n',
+        encoding="utf-8",
+    )
+
+    settings = Settings.from_env({"SUPPORT_ROUTER_ENV_FILE": str(env_file)})
+
+    assert settings.backend == "jev"
+    assert settings.api_token == "live token"
+    assert settings.typesafe_api_key == "quoted-key"
+
+
+@pytest.mark.parametrize(
+    "content",
+    [
+        "NOT_AN_ASSIGNMENT\n",
+        "BAD-KEY=value\n",
+        "=value\n",
+    ],
+)
+def test_malformed_router_env_file_is_rejected(tmp_path, content):
+    env_file = tmp_path / "router.env"
+    env_file.write_text(content, encoding="utf-8")
+
+    with pytest.raises(ConfigurationError, match="Invalid environment"):
+        Settings.from_env({"SUPPORT_ROUTER_ENV_FILE": str(env_file)})
+
+
+def test_process_values_override_sensitive_file_values(tmp_path):
+    env_file = tmp_path / "router.env"
+    env_file.write_text(
+        "SUPPORT_ROUTER_BACKEND=jev\n"
+        "SUPPORT_ROUTER_API_TOKEN=file-token\n"
+        "TYPESAFE_API_KEY=file-key\n",
+        encoding="utf-8",
+    )
+
+    settings = Settings.from_env(
+        {
+            "SUPPORT_ROUTER_ENV_FILE": str(env_file),
+            "SUPPORT_ROUTER_API_TOKEN": "process-token",
+            "TYPESAFE_API_KEY": "process-key",
+        }
+    )
+
+    assert settings.api_token == "process-token"
+    assert settings.typesafe_api_key == "process-key"
+
+
 def test_minimal_config_loads_and_maps_directly_to_jev_choice_criteria():
     config = load_company_config(CONFIG)
     assert set(config.teams) == {"billing", "technical_support", "customer_success"}

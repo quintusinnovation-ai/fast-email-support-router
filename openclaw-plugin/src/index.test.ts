@@ -48,4 +48,48 @@ describe("support-router", () => {
       await rm(directory, { recursive: true, force: true });
     }
   });
+
+  it("surfaces stderr when the router exits unsuccessfully", async () => {
+    const directory = await mkdtemp(join(tmpdir(), "support-router-plugin-"));
+    const executable = join(directory, "router");
+    await writeFile(executable, "#!/bin/sh\necho 'invalid router config' >&2\nexit 2\n");
+    await chmod(executable, 0o700);
+    try {
+      await expect(
+        runRouter(
+          {
+            message_id: "provider-1",
+            sender: "customer@example.com",
+            subject: "Duplicate charge",
+            body_text: "Charged twice",
+          },
+          { executable, configFile: "/instance/teams.json" },
+        ),
+      ).rejects.toThrow("invalid router config");
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
+  });
+
+  it("rejects malformed router output", async () => {
+    const directory = await mkdtemp(join(tmpdir(), "support-router-plugin-"));
+    const executable = join(directory, "router");
+    await writeFile(executable, "#!/bin/sh\nprintf 'not-json'\n");
+    await chmod(executable, 0o700);
+    try {
+      await expect(
+        runRouter(
+          {
+            message_id: "provider-1",
+            sender: "customer@example.com",
+            subject: "Duplicate charge",
+            body_text: "Charged twice",
+          },
+          { executable, configFile: "/instance/teams.json" },
+        ),
+      ).rejects.toThrow();
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
+  });
 });
