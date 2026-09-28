@@ -1,0 +1,15 @@
+[Unit]
+Description=Fast Email Support Router API
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=%h/projects/support-router/.venv/bin/support-router-api
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=default.target

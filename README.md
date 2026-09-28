@@ -1,6 +1,6 @@
-# Support Router
+# Fast Email Support Router
 
-A provider-neutral Python core for routing incoming support emails to service teams or human review.
+An agent-agnostic Python web service for routing incoming support emails to service teams or human review.
 
 The first implementation uses a deterministic mock backend. It accepts the same email fields as a future live decision provider, authenticates every invocation, and selects fixture outcomes by email subject. This makes local development and CI reproducible, offline, and free of model usage costs.
 
@@ -53,6 +53,45 @@ TYPESAFE_DEFAULT_MODEL=jev-latest
 
 Process environment variables override values from that file. `SUPPORT_ROUTER_ENV_FILE` can select a different file, and `TYPESAFE_BASE_URL` can override the default `https://api.typesafe.ai/v1/systemone` endpoint. Provider failures are retried within a bounded window and then resolve to `human_review`; credentials and email bodies are never logged by the core.
 
+## HTTP API
+
+Start the service:
+
+```bash
+support-router-api
+```
+
+It listens on `127.0.0.1:8080` by default. `SUPPORT_ROUTER_HOST` and `SUPPORT_ROUTER_PORT` can override the bind address. The service exposes:
+
+- `POST /v1/route` for routing one email
+- `GET /health` for liveness checks
+- `GET /openapi.json` for the machine-readable API contract
+- `GET /docs` for interactive API documentation
+
+Route an email with any ordinary HTTP client:
+
+```bash
+curl --fail-with-body \
+  -H "Authorization: Bearer $SUPPORT_ROUTER_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"message_id":"gmail-message-123","sender":"customer@example.com","subject":"Charged twice for our subscription","body_text":"We have two identical charges for September."}' \
+  http://127.0.0.1:8080/v1/route
+```
+
+The API is independent of any agent platform. Agents need only a generic HTTP or OpenAPI client and the companion instructions in `skill/route-support-emails/`.
+
+### Run as a user service
+
+```bash
+install -D -m 644 \
+  deploy/systemd/fast-email-support-router.service \
+  ~/.config/systemd/user/fast-email-support-router.service
+systemctl --user daemon-reload
+systemctl --user enable --now fast-email-support-router.service
+```
+
+The service reads router and JEV configuration directly from `~/.config/support-router/secrets.env` for every routing request. Updating the JEV key does not require a service restart.
+
 ## JSON command line interface
 
 The installed command reads one email as JSON from standard input and writes one routing result as JSON to standard output:
@@ -64,18 +103,9 @@ printf '%s\n' '{"message_id":"gmail-message-123","sender":"customer@example.com"
 
 Set `SUPPORT_ROUTER_CONFIG_FILE` to the instance-specific team configuration. Keep that file outside the repository when it contains real destination addresses.
 
-## OpenClaw tool and skill
+## Agent skill
 
-The plugin exposes `support_router_route_email`. It accepts `message_id`, `sender`, `subject`, `body_text`, and optional `received_at`; configuration is loaded internally by the installed core.
-
-```bash
-cd openclaw-plugin
-npm ci
-npm run build
-openclaw plugins install --link "$PWD"
-```
-
-Configure the plugin with the absolute path to the installed `support-router` executable, then restart the OpenClaw gateway. The plugin only transports the email JSON; backend settings and credentials belong to the router's private environment file. The complete companion skill is versioned in `skill/route-support-emails/`.
+The companion skill in `skill/route-support-emails/` tells any HTTP-capable agent how to call the REST API and forward the unchanged original email to the returned destination. It contains no platform-specific bridge or routing logic.
 
 ## Development
 
