@@ -121,6 +121,7 @@ git clone https://github.com/quintusinnovation-ai/fast-email-support-router.git
 cd fast-email-support-router
 python -m venv .venv
 source .venv/bin/activate
+python -m pip install -r requirements.txt
 python -m pip install .
 ```
 
@@ -187,7 +188,8 @@ printf '%s\n' '{
 ## Development
 
 ```bash
-python -m pip install -e '.[dev]'
+python -m pip install -r requirements-dev.txt
+python -m pip install -e .
 python -m pytest
 ```
 
