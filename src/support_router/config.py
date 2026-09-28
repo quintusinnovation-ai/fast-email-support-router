@@ -13,6 +13,7 @@ from typing import Any, Mapping
 MOCK_API_TOKEN = "12345"
 TEAM_ID_PATTERN = re.compile(r"^[a-z][a-z0-9_]*$")
 EMAIL_PATTERN = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+DEFAULT_ENV_FILE = Path.home() / ".config" / "support-router" / "secrets.env"
 
 
 class ConfigurationError(ValueError):
@@ -100,7 +101,15 @@ class Settings:
 
     @classmethod
     def from_env(cls, env: Mapping[str, str] | None = None) -> "Settings":
-        values = os.environ if env is None else env
+        process_values = os.environ if env is None else env
+        configured_env_file = process_values.get("SUPPORT_ROUTER_ENV_FILE")
+        env_file = (
+            Path(configured_env_file).expanduser()
+            if configured_env_file
+            else DEFAULT_ENV_FILE
+        )
+        file_values = _load_env_file(env_file) if env is None or configured_env_file else {}
+        values = {**file_values, **process_values}
         backend = values.get("SUPPORT_ROUTER_BACKEND", "mock").strip().lower()
         if backend not in {"mock", "jev"}:
             raise ConfigurationError("SUPPORT_ROUTER_BACKEND must be 'mock' or 'jev'")
@@ -126,3 +135,36 @@ class Settings:
                 "TYPESAFE_BASE_URL", "https://api.typesafe.ai/v1/systemone"
             ),
         )
+
+
+def _load_env_file(path: Path) -> dict[str, str]:
+    """Load the router's private configuration without modifying process state."""
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except FileNotFoundError:
+        return {}
+    except OSError as exc:
+        raise ConfigurationError(f"Unable to load environment file: {path}") from exc
+
+    values: dict[str, str] = {}
+    for line_number, raw_line in enumerate(lines, start=1):
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if line.startswith("export "):
+            line = line[7:].lstrip()
+        if "=" not in line:
+            raise ConfigurationError(
+                f"Invalid environment entry in {path} at line {line_number}"
+            )
+        key, value = line.split("=", 1)
+        key = key.strip()
+        if not key or not key.replace("_", "a").isalnum():
+            raise ConfigurationError(
+                f"Invalid environment key in {path} at line {line_number}"
+            )
+        value = value.strip()
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
+            value = value[1:-1]
+        values[key] = value
+    return values

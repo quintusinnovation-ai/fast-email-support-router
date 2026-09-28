@@ -67,11 +67,8 @@ export async function runRouter(
   signal?: AbortSignal,
 ): Promise<unknown> {
   const env = {
-    ...process.env,
-    SUPPORT_ROUTER_CONFIG_FILE: config.configFile,
-    SUPPORT_ROUTER_BACKEND: config.backend ?? "mock",
-    ...(config.fixtureFile ? { SUPPORT_ROUTER_FIXTURE_FILE: config.fixtureFile } : {}),
-    ...(config.apiToken ? { SUPPORT_ROUTER_API_TOKEN: config.apiToken } : {}),
+    HOME: process.env.HOME,
+    PATH: process.env.PATH,
   };
   const child = spawn(config.executable, [], {
     env,

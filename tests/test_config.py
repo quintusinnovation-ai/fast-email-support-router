@@ -37,6 +37,39 @@ def test_jev_requires_typesafe_key():
         )
 
 
+def test_settings_load_router_owned_env_file(tmp_path):
+    env_file = tmp_path / "router.env"
+    env_file.write_text(
+        "SUPPORT_ROUTER_BACKEND=jev\n"
+        "SUPPORT_ROUTER_API_TOKEN=live\n"
+        "TYPESAFE_API_KEY=from-file\n",
+        encoding="utf-8",
+    )
+
+    settings = Settings.from_env({"SUPPORT_ROUTER_ENV_FILE": str(env_file)})
+
+    assert settings.backend == "jev"
+    assert settings.api_token == "live"
+    assert settings.typesafe_api_key == "from-file"
+
+
+def test_process_environment_overrides_router_env_file(tmp_path):
+    env_file = tmp_path / "router.env"
+    env_file.write_text(
+        "SUPPORT_ROUTER_API_TOKEN=12345\nTYPESAFE_DEFAULT_MODEL=old-model\n",
+        encoding="utf-8",
+    )
+
+    settings = Settings.from_env(
+        {
+            "SUPPORT_ROUTER_ENV_FILE": str(env_file),
+            "TYPESAFE_DEFAULT_MODEL": "new-model",
+        }
+    )
+
+    assert settings.typesafe_default_model == "new-model"
+
+
 def test_minimal_config_loads_and_maps_directly_to_jev_choice_criteria():
     config = load_company_config(CONFIG)
     assert set(config.teams) == {"billing", "technical_support", "customer_success"}

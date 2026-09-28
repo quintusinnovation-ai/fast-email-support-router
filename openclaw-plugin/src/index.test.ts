@@ -17,7 +17,7 @@ describe("support-router", () => {
     const executable = join(directory, "router");
     await writeFile(
       executable,
-      "#!/usr/bin/env node\nlet input='';process.stdin.on('data',c=>input+=c);process.stdin.on('end',()=>process.stdout.write(JSON.stringify({received:JSON.parse(input)})));\n",
+      "#!/usr/bin/env node\nlet input='';process.stdin.on('data',c=>input+=c);process.stdin.on('end',()=>process.stdout.write(JSON.stringify({received:JSON.parse(input),routerEnv:Object.keys(process.env).filter(k=>k.startsWith('SUPPORT_ROUTER_')||k.startsWith('TYPESAFE_'))})));\n",
     );
     await chmod(executable, 0o700);
     try {
@@ -42,6 +42,7 @@ describe("support-router", () => {
           subject: "Duplicate charge",
           body_text: "Charged twice",
         },
+        routerEnv: [],
       });
     } finally {
       await rm(directory, { recursive: true, force: true });

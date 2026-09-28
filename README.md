@@ -41,16 +41,17 @@ result = route_email(
 
 ## Live JEV backend
 
-The live adapter sends the same state and atomic questions to the TypeSafe System One API. Enable it after adding the API key:
+The live adapter sends the same state and atomic questions to the TypeSafe System One API. The router owns and reloads its private configuration on every invocation from `~/.config/support-router/secrets.env`; it does not depend on a parent process or OpenClaw for secrets:
 
 ```bash
-export SUPPORT_ROUTER_BACKEND=jev
-export SUPPORT_ROUTER_API_TOKEN=<private-tool-token>
-export TYPESAFE_API_KEY=<typesafe-key>
-export TYPESAFE_DEFAULT_MODEL=jev-latest
+SUPPORT_ROUTER_BACKEND=jev
+SUPPORT_ROUTER_API_TOKEN=<private-tool-token>
+SUPPORT_ROUTER_CONFIG_FILE=/absolute/path/to/teams.json
+TYPESAFE_API_KEY=<typesafe-key>
+TYPESAFE_DEFAULT_MODEL=jev-latest
 ```
 
-`TYPESAFE_BASE_URL` can override the default `https://api.typesafe.ai/v1/systemone` endpoint. Provider failures are retried within a bounded window and then resolve to `human_review`; credentials and email bodies are never logged by the core.
+Process environment variables override values from that file. `SUPPORT_ROUTER_ENV_FILE` can select a different file, and `TYPESAFE_BASE_URL` can override the default `https://api.typesafe.ai/v1/systemone` endpoint. Provider failures are retried within a bounded window and then resolve to `human_review`; credentials and email bodies are never logged by the core.
 
 ## JSON command line interface
 
@@ -74,7 +75,7 @@ npm run build
 openclaw plugins install --link "$PWD"
 ```
 
-Configure the plugin with the absolute paths to the installed `support-router` executable and the instance team configuration, then restart the OpenClaw gateway. The complete companion skill is versioned in `skill/route-support-emails/`.
+Configure the plugin with the absolute path to the installed `support-router` executable, then restart the OpenClaw gateway. The plugin only transports the email JSON; backend settings and credentials belong to the router's private environment file. The complete companion skill is versioned in `skill/route-support-emails/`.
 
 ## Development
 
